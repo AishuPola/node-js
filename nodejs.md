@@ -110,3 +110,10 @@ app.use(cors()); //for all the ,ethods cors is allowed
 app.use(express.json());
 //for all particular methods, we can keep in betwwen them
 ```
+
+![alt text](image.png)
+default value is 4000, this is not valid in local system
+![alt text](image-1.png)
+push to github
+![alt text](image-2.png)
+![alt text](image-3.png)
