@@ -87,3 +87,12 @@ sails
 koa
 meter
 happy, these are equilvalet to express.
+
+process to install express:
+
+https://ragavkumarv.com/blog/setup-express/
+
+npm run start
+npm run dev
+//express is converting the array of objects into json format
+// /movies->movies should be displayed
