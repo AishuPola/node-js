@@ -96,3 +96,17 @@ npm run start
 npm run dev
 //express is converting the array of objects into json format
 // /movies->movies should be displayed
+
+netfligfy cannot connect to local host
+
+app.use(cors());:
+
+express-->converts array of objects into json formart.
+
+```js
+//app.use->will apply the middleware to all apis.
+//
+app.use(cors()); //for all the ,ethods cors is allowed
+app.use(express.json());
+//for all particular methods, we can keep in betwwen them
+```
