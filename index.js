@@ -161,7 +161,15 @@ app.post("/movies", express.json(), function (request, response) {
 app.put("/movies/:id", express.json(), function (request, response) {
   const { id } = request.params;
   const data = request.body;
-  console.log(id, data);
+
+  const movieIdx = movies.findIndex((mv) => mv.id == id);
+  if (movieIdx >= 0) {
+    movies[movieIdx] = { ...movies[movieIdx], ...data };
+    response.send(movies[movieIdx]);
+  } else {
+    response.status(404).send({ msg: "Movie not found" });
+  }
+  console.log(id, data, movieIdx);
 });
 
 //express is converting the array of objects into json format
