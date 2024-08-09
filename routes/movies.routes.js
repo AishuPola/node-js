@@ -116,14 +116,24 @@ let movies = [
 
 ///movies to get movies
 router.get("/", async function (request, response) {
-  response.send((await Movies.scan.go()).data); //call back funtion we have req and res
+  try {
+    response.send((await Movies.scan.go()).data);
+  } catch (error) {
+    //call back funtion we have req and res
+    response.send("movies not loaded");
+  }
 });
 router.get("/:id", async function (request, response) {
   const { id } = request.params;
-  const res = await Movies.get({ movieId: id }).go();
-  res.data
-    ? response.send(res.data)
-    : response.status(404).send("movie not found");
+  try {
+    const res = await getMovieById(id);
+    res.data
+      ? response.send(res.data)
+      : response.status(404).send("movie not found");
+  } catch (error) {
+    console.log(error);
+    response.status(500).send("fail to retrireve movie");
+  }
 });
 
 // router.delete("/:id", function (request, response) {
@@ -140,12 +150,16 @@ router.get("/:id", async function (request, response) {
 router.delete("/:id", async function (request, response) {
   const { id } = request.params;
   // console.log(id)
-  const res = await Movies.get({ movieId: id }).go();
-  if (res.data) {
-    await Movies.delete({ movieId: id }).go();
-    response.send({ msg: "deleted successfully", data: res.data });
-  } else {
-    response.status(404).send({ msg: "Movie not found" });
+  try {
+    const res = await getMovieById(id);
+    if (res.data) {
+      await deleteMovieById(id);
+      response.send({ msg: "deleted successfully", data: res.data });
+    } else {
+      response.status(404).send({ msg: "Movie not found" });
+    }
+  } catch (error) {
+    response.status(500).send("deleted failed");
   }
 });
 
@@ -164,10 +178,13 @@ router.post("/", express.json(), async function (request, response) {
     ...data,
     movieId: uuidv4(),
   };
+  try {
+    await Movies.create(addMovie).go();
 
-  await Movies.create(addMovie).go();
-
-  response.send(addMovie);
+    response.status(201).send(addMovie);
+  } catch (error) {
+    response.status(500).send("fsil to add movie"); //something bad happend on serve is 500
+  }
   // data.movieId = uuidv4();
 });
 //put method:
@@ -189,17 +206,32 @@ router.post("/", express.json(), async function (request, response) {
 router.put("/:id", express.json(), async function (request, response) {
   const { id } = request.params;
   const updatedata = request.body; //updated data
-
-  const existingData = await Movies.get({ movieId: id }).go();
-  if (existingData.data) {
-    const result = await Movies.put({
-      ...existingData.data,
-      ...updatedata,
-    }).go();
-    response.send(result);
-  } else {
-    response.status(404).send({ msg: "Movie not found" });
+  try {
+    const existingData = await getMovieById(id);
+    if (existingData.data) {
+      const result = await editMoviesById(existingData, updatedata);
+      response.send(result);
+    } else {
+      response.status(404).send({ msg: "Movie not found" });
+    }
+  } catch (error) {
+    response.status(500).send("failed to edit the movie");
   }
   // console.log(id, data, movieIdx);
 });
 export default router;
+
+async function editMoviesById(existingData, updatedata) {
+  return await Movies.put({
+    ...existingData.data,
+    ...updatedata,
+  }).go();
+}
+
+async function deleteMovieById(id) {
+  await Movies.delete({ movieId: id }).go();
+}
+
+async function getMovieById(id) {
+  return await Movies.get({ movieId: id }).go();
+}
