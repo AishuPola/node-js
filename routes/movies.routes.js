@@ -1,142 +1,8 @@
-# node js
-
-what is nodejs?
-
-eniviormnemnt torun js.(place to run js)
-
-why node.js?
-some thing broswers cannot do?
-crud operations it cannot do.  
-it is intentiionally made that way.  
-so that others canit change them.
-
-dis advantages :
-
-browers are restricted.
-
-1, cannot acess file systerm  
-2.cannot acess hardware details  
-3.cannot copy files.  
-4. cannot delete files. '
-
-Famous virus are spread through browser.
-!. love viruse:
-early 20000's 2. worm virus:
-it will duplicate
-
-node js is to used to run js, build web apps.
-
-# node js usage:
-
-1. streaming:
-2. BDA
-3. CHAT BOT
-4. web srcapping(stealing data )
-
-# things which wont work on node js:
-
-1. dom methods.
-
-document.getelementbyid, etc wont run.  
-2. window object
-
-settimeout,setinterval are present but not in window.(global.this its present)
-
-old module exports:
-
-# os:
-
-(info on cpu, memory, directors,etc)
-
-why backend need this?  
-when u run heavy things .
-
-```js
-const os = require("os"); //inbuilt package
-os.freemem(); //ram
-os.titalmem; // total ram
-os.version; //version of the os
-os.cpus(); //prcoesser
-```
-
-# fs(file system)
-
-const fs=require("fs")//imorting
-
-# disk fragmentation:
-
-its all about aranging the books in one place.
-hard-disk
-
-# node.js architechture
-
-sunchronous ocode(will be in call stack) will block aysnchrnous code.(call back queue)
-when synchrnous code is in call stack, it will block the api
-
-node.js bindings: os operations are present.(os and files are present)  
-libuv-->(asynchrnous l/o)(internally its present)(it is abstracted)(it is same like jvm)
-(transaltes the api node js porvides converts into os commands,)
-node.js developers will use it.
-
-# to create package.json
-
-web architeture:
-recstjs--->node express(framework to build server)===>mangodb
-
-sails
-koa
-meter
-happy, these are equilvalet to express.
-
-process to install express:
-
-https://ragavkumarv.com/blog/setup-express/
-
-npm run start
-npm run dev
-//express is converting the array of objects into json format
-// /movies->movies should be displayed
-
-netfligfy cannot connect to local host
-
-app.use(cors());:
-
-express-->converts array of objects into json formart.
-
-```js
-//app.use->will apply the middleware to all apis.
-//
-app.use(cors()); //for all the ,ethods cors is allowed
-app.use(express.json());
-//for all particular methods, we can keep in betwwen them
-```
-
-![alt text](image.png)
-default value is 4000, this is not valid in local system
-![alt text](image-1.png)
-push to github
-![alt text](image-2.png)
-![alt text](image-3.png)
-![alt text](image-4.png)
-url is taken from render.com
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
-![alt text](image-8.png)
-![alt text](image-9.png)
-![alt text](image-10.png)
-![alt text](image-11.png)
-![alt text](image-12.png)
-![alt text](image-13.png)
-![alt text](image-14.png)
-![alt text](image-15.png)
-![alt text](image-16.png)
-![alt text](image-17.png)
-![alt text](image-18.png)
-![alt text](image-19.png)
-![alt text](image-20.png)
-
-```js
+import express from "express";
+import { v4 as uuidv4 } from "uuid";
+import { Movies } from "../entities/movies.entity.js";
+//organise our apps
+const router = express.Router();
 let movies = [
   {
     id: "99",
@@ -249,45 +115,91 @@ let movies = [
 ];
 
 ///movies to get movies
-router.get("/", function (request, response) {
-  response.send(movies); //call back funtion we have req and res
+router.get("/", async function (request, response) {
+  response.send((await Movies.scan.go()).data); //call back funtion we have req and res
+});
+router.get("/:id", async function (request, response) {
+  const { id } = request.params;
+  const res = await Movies.get({ movieId: id }).go();
+  res.data
+    ? response.send(res.data)
+    : response.status(404).send("movie not found");
 });
 
-router.delete("/:id", function (request, response) {
+// router.delete("/:id", function (request, response) {
+//   const { id } = request.params;
+//   // console.log(id)
+//   const res = movies.find((m) => m.id == id);
+//   if (res) {
+//     movies = movies.filter((m) => m.id != id);
+//     response.send({ msg: "deleted successfully", data: res });
+//   } else {
+//     response.status(404).send({ msg: "Movie not found" });
+//   }
+// });
+router.delete("/:id", async function (request, response) {
   const { id } = request.params;
   // console.log(id)
-  const res = movies.find((m) => m.id == id);
-  if (res) {
-    movies = movies.filter((m) => m.id != id);
-    response.send({ msg: "deleted successfully", data: res });
+  const res = await Movies.get({ movieId: id }).go();
+  if (res.data) {
+    await Movies.delete({ movieId: id }).go();
+    response.send({ msg: "deleted successfully", data: res.data });
   } else {
     response.status(404).send({ msg: "Movie not found" });
   }
 });
 
-router.post("/", express.json(), function (request, response) {
-  const data = request.body;
-  console.log(data);
-  //   console.log(uuidv4());
-  data.id = uuidv4();
-  movies.push(data);
-  response.send(data);
-});
+//  router.post("/", express.json(), function (request, response) {
+//     const data = request.body;
+//     console.log(data);
+//     //   console.log(uuidv4());
+//     data.id = uuidv4();
+//     // movies.push(data);
+//     // response.send(data);
 
+//   });
+router.post("/", express.json(), async function (request, response) {
+  const data = request.body;
+  const addMovie = {
+    ...data,
+    movieId: uuidv4(),
+  };
+
+  await Movies.create(addMovie).go();
+
+  response.send(addMovie);
+  // data.movieId = uuidv4();
+});
+//put method:
 //mix of get and push
-router.put(":id", express.json(), function (request, response) {
-  const { id } = request.params;
-  const data = request.body;
+// router.put(":id", express.json(), function (request, response) {
+//   const { id } = request.params;
+//   const data = request.body;
 
-  const movieIdx = movies.findIndex((mv) => mv.id == id);
-  if (movieIdx >= 0) {
-    movies[movieIdx] = { ...movies[movieIdx], ...data };
-    response.send(movies[movieIdx]);
+//   const movieIdx = movies.findIndex((mv) => mv.id == id);
+//   if (movieIdx >= 0) {
+//     movies[movieIdx] = { ...movies[movieIdx], ...data };
+//     response.send(movies[movieIdx]);
+//   } else {
+//     response.status(404).send({ msg: "Movie not found" });
+//   }
+//   console.log(id, data, movieIdx);
+// });
+//database
+router.put("/:id", express.json(), async function (request, response) {
+  const { id } = request.params;
+  const updatedata = request.body; //updated data
+
+  const existingData = await Movies.get({ movieId: id }).go();
+  if (existingData.data) {
+    const result = await Movies.put({
+      ...existingData.data,
+      ...updatedata,
+    }).go();
+    response.send(result);
   } else {
     response.status(404).send({ msg: "Movie not found" });
   }
-  console.log(id, data, movieIdx);
+  // console.log(id, data, movieIdx);
 });
-
 export default router;
-```
