@@ -21,13 +21,29 @@ export async function createUserctr(request, response) {
     response.status(400).send({ msg: "username already taken" });
     return;
   }
-  //   const hashedPassword = await genHashPassword(data.password);
+  const hashedPassword = await genHashPassword(data.password);
   try {
-    await createUser({ username: data.username, password: data.password });
+    await createUser({ username: data.username, password: hashedPassword });
 
     response.status(201).send(data);
   } catch (error) {
     response.status(500).send("fail to add user"); //something bad happend on serve is 500
   }
-  // data.movieId = uuidv4();
+}
+export async function loginUserctr(request, response) {
+  const data = request.body;
+  const userFromDb = await getuserbyusername(data.username);
+  if (!userFromDb.data) {
+    response.status(400).send({ msg: "invalid crendentials" });
+    return;
+  } else {
+    const storedDbPassword = userFromDb.data.password;
+    const providedPassword = data.password;
+
+    const ispasswordcheck = await bcrypt.compare(
+      storedDbPassword,
+      providedPassword
+    );
+    console.log(ispasswordcheck);
+  }
 }
