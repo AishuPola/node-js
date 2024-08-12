@@ -11,13 +11,13 @@ const genHashPassword = async (password) => {
 };
 export async function createUserctr(request, response) {
   const data = request.body;
-  //   if (data.password.length < 8) {
-  //     response.status(400).send("pass is too short");
-  //   }
-
+  if (data.password.length < 8) {
+    response.status(400).send({ msg: "pass is too short" });
+    return;
+  }
   //   const userFromDb = await getuserbyusername(data.username);
 
-  //   if (userFromDb.data) {
+  //   if (userFromDb) {
   //     response.status(400).send("username already taken");
   //     return;
   //   }
