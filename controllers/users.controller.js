@@ -15,12 +15,12 @@ export async function createUserctr(request, response) {
     response.status(400).send({ msg: "pass is too short" });
     return;
   }
-  //   const userFromDb = await getuserbyusername(data.username);
+  const userFromDb = await getuserbyusername(data.username);
 
-  //   if (userFromDb) {
-  //     response.status(400).send("username already taken");
-  //     return;
-  //   }
+  if (userFromDb.data) {
+    response.status(400).send({ msg: "username already taken" });
+    return;
+  }
   //   const hashedPassword = await genHashPassword(data.password);
   try {
     await createUser({ username: data.username, password: data.password });
