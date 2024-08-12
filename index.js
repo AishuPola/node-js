@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const app = express();
 import moviesRouter from "./routes/movies.routes.js";
+import usersRouter from "./routes/users.routes.js";
 const PORT = process.env.PORT || 4000;
 
 let movies = [
@@ -124,6 +125,7 @@ let movies = [
 app.use(cors()); //for all the ,ethods cors is allowed
 app.use(express.json());
 app.use("/movies", moviesRouter);
+app.use("/users", usersRouter);
 //for all particular methods, we can keep in betwwen them
 app.get("/", function (request, response) {
   response.send("🙋‍♂️, 🌏 🎊✨🤩"); //call back funtion we have req and res

@@ -1,6 +1,19 @@
 import express from "express";
 import { v4 as uuidv4 } from "uuid";
-import { Movies } from "../entities/movies.entity.js";
+import {
+  createMovies,
+  getAllMovies,
+  editMoviesById,
+  deleteMovieById,
+  getMovieById,
+} from "../services/movies.service.js";
+import {
+  getAllMoviesCtrl,
+  getMovieByIdCtrl,
+  deleteMovieByIdCtrl,
+  AddMoviesCtrl,
+  editMoviesByIdctrl,
+} from "../controllers/movies.controller.js";
 //organise our apps
 const router = express.Router();
 let movies = [
@@ -115,26 +128,6 @@ let movies = [
 ];
 
 ///movies to get movies
-router.get("/", async function (request, response) {
-  try {
-    response.send((await Movies.scan.go()).data);
-  } catch (error) {
-    //call back funtion we have req and res
-    response.send("movies not loaded");
-  }
-});
-router.get("/:id", async function (request, response) {
-  const { id } = request.params;
-  try {
-    const res = await getMovieById(id);
-    res.data
-      ? response.send(res.data)
-      : response.status(404).send("movie not found");
-  } catch (error) {
-    console.log(error);
-    response.status(500).send("fail to retrireve movie");
-  }
-});
 
 // router.delete("/:id", function (request, response) {
 //   const { id } = request.params;
@@ -147,21 +140,12 @@ router.get("/:id", async function (request, response) {
 //     response.status(404).send({ msg: "Movie not found" });
 //   }
 // });
-router.delete("/:id", async function (request, response) {
-  const { id } = request.params;
-  // console.log(id)
-  try {
-    const res = await getMovieById(id);
-    if (res.data) {
-      await deleteMovieById(id);
-      response.send({ msg: "deleted successfully", data: res.data });
-    } else {
-      response.status(404).send({ msg: "Movie not found" });
-    }
-  } catch (error) {
-    response.status(500).send("deleted failed");
-  }
-});
+
+router.get("/", getAllMoviesCtrl);
+router.get("/:id", getMovieByIdCtrl);
+router.delete("/:id", deleteMovieByIdCtrl);
+router.post("/", AddMoviesCtrl);
+router.put("/:id", editMoviesByIdctrl);
 
 //  router.post("/", express.json(), function (request, response) {
 //     const data = request.body;
@@ -172,21 +156,7 @@ router.delete("/:id", async function (request, response) {
 //     // response.send(data);
 
 //   });
-router.post("/", express.json(), async function (request, response) {
-  const data = request.body;
-  const addMovie = {
-    ...data,
-    movieId: uuidv4(),
-  };
-  try {
-    await Movies.create(addMovie).go();
 
-    response.status(201).send(addMovie);
-  } catch (error) {
-    response.status(500).send("fsil to add movie"); //something bad happend on serve is 500
-  }
-  // data.movieId = uuidv4();
-});
 //put method:
 //mix of get and push
 // router.put(":id", express.json(), function (request, response) {
@@ -203,35 +173,28 @@ router.post("/", express.json(), async function (request, response) {
 //   console.log(id, data, movieIdx);
 // });
 //database
-router.put("/:id", express.json(), async function (request, response) {
-  const { id } = request.params;
-  const updatedata = request.body; //updated data
-  try {
-    const existingData = await getMovieById(id);
-    if (existingData.data) {
-      const result = await editMoviesById(existingData, updatedata);
-      response.send(result);
-    } else {
-      response.status(404).send({ msg: "Movie not found" });
-    }
-  } catch (error) {
-    response.status(500).send("failed to edit the movie");
-  }
-  // console.log(id, data, movieIdx);
-});
+
 export default router;
 
-async function editMoviesById(existingData, updatedata) {
-  return await Movies.put({
-    ...existingData.data,
-    ...updatedata,
-  }).go();
-}
+// async function createMovies(addMovie) {
+//   await Movies.create(addMovie).go();
+// }
 
-async function deleteMovieById(id) {
-  await Movies.delete({ movieId: id }).go();
-}
+// async function getAllMovies() {
+//   return (await Movies.scan.go()).data;
+// }
 
-async function getMovieById(id) {
-  return await Movies.get({ movieId: id }).go();
-}
+// async function editMoviesById(existingData, updatedata) {
+//   return await Movies.put({
+//     ...existingData.data,
+//     ...updatedata,
+//   }).go();
+// }
+
+// async function deleteMovieById(id) {
+//   await Movies.delete({ movieId: id }).go();
+// }
+
+// async function getMovieById(id) {
+//   return await Movies.get({ movieId: id }).go();
+// }

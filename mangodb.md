@@ -84,3 +84,63 @@ any(we dont use it)
 1. set of strings
 2. set of numbers
    these wont allow the duplicate numbers.
+
+these all will take place in backend.
+
+request--->Index--->roouter---->controller--->service--->ineteracts with the database.
+
+# authentication and authorisation:
+
+fetch(login)
+----->
+verification--->if fail
+(error message)
+not fail then
+---->issue token---->
+token (store token)(local storage or cookies)
+why local storage?
+even though we close the whole system,the login credentails will be there thats why local storage.
+
+authorisation:
+
+how to store password:
+
+1. vulunerable to hacker
+
+there is problem with encrpytion, :
+so we are using hashing:
+no matter how big the input is, :
+the 10 digit number is given.
+these numbers are highly sensitive and unique.
+
+real world applications in hashing:
+bsnl connecting india(120kb/s)  
+windows(4gb)
+
+# salting:
+
+adding value to password and generating a new hash value:
+when the user is doing sign up, salting is used,
+
+10 rounds of salting is good, it takes 4seconds only
+
+bcrypt is the pacakge we use.
+node.bcrypt.js
+![alt text](image-21.png)
+![alt text](image-22.png)
+![alt text](image-23.png)
+
+do we need validation in the backend?
+yes
+why?
+when hacker directly atacks on backedn
+(for security) validation is required for backend
+for user experience validation is requied in frontend.
+
+# login:
+
+![alt text](image-24.png)
+![alt text](image-25.png)
+![alt text](image-26.png)
+![alt text](image-27.png)
+![alt text](image-28.png)
