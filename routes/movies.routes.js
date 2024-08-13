@@ -1,12 +1,6 @@
 import express from "express";
-import { v4 as uuidv4 } from "uuid";
-import {
-  createMovies,
-  getAllMovies,
-  editMoviesById,
-  deleteMovieById,
-  getMovieById,
-} from "../services/movies.service.js";
+import { auth } from "../middleware/auth.middleware.js";
+
 import {
   getAllMoviesCtrl,
   getMovieByIdCtrl,
@@ -142,9 +136,9 @@ let movies = [
 // });
 
 router.get("/", getAllMoviesCtrl);
-router.get("/:id", getMovieByIdCtrl);
+router.get("/:id", auth, getMovieByIdCtrl);
 router.delete("/:id", deleteMovieByIdCtrl);
-router.post("/", AddMoviesCtrl);
+router.post("/", auth, AddMoviesCtrl);
 router.put("/:id", editMoviesByIdctrl);
 
 //  router.post("/", express.json(), function (request, response) {

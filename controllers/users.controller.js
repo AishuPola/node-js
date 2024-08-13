@@ -1,5 +1,6 @@
 import { createUser, getuserbyusername } from "../services/users.service.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 //$2b$10$ES9xOXJz6vB8XH.lje0q/u this is the salt value, everytime it will create the salt value.
 
@@ -41,11 +42,11 @@ export async function loginUserctr(request, response) {
     const providedPassword = data.password;
 
     const ispasswordcheck = await bcrypt.compare(
-      storedDbPassword,
-      providedPassword
+      providedPassword,
+      storedDbPassword
     );
     console.log(ispasswordcheck);
-    if (isPasswordCheck) {
+    if (ispasswordcheck) {
       const token = jwt.sign(
         { id: userFromDb.data.username },
         process.env.SECRET_KEY
@@ -53,11 +54,6 @@ export async function loginUserctr(request, response) {
       response.status(200).send({ msg: "Login sucessful", token });
     } else {
       response.status(400).send({ msg: "Invalid credentials" });
-    }
-    if (ispasswordcheck) {
-      response.status(200).send({ msg: "login sucessfull" });
-    } else {
-      response.status(400).send({ msg: "invalid crendentails" });
     }
   }
 }
