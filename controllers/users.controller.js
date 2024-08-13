@@ -45,6 +45,15 @@ export async function loginUserctr(request, response) {
       providedPassword
     );
     console.log(ispasswordcheck);
+    if (isPasswordCheck) {
+      const token = jwt.sign(
+        { id: userFromDb.data.username },
+        process.env.SECRET_KEY
+      );
+      response.status(200).send({ msg: "Login sucessful", token });
+    } else {
+      response.status(400).send({ msg: "Invalid credentials" });
+    }
     if (ispasswordcheck) {
       response.status(200).send({ msg: "login sucessfull" });
     } else {
