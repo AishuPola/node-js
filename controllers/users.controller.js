@@ -45,5 +45,10 @@ export async function loginUserctr(request, response) {
       providedPassword
     );
     console.log(ispasswordcheck);
+    if (isPasswordCheck) {
+      response.status(200).send({ msg: "Login sucessful" });
+    } else {
+      response.status(400).send({ msg: "Invalid credentials" });
+    }
   }
 }
