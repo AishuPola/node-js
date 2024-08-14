@@ -146,3 +146,8 @@ for user experience validation is requied in frontend.
 ![alt text](image-28.png)
 ![alt text](image-29.png)
 ![alt text](image-30.png)
+
+roles:
+super user: can make other persons admin(access+crud)
+admin--->can do crud
+normal can only read.s

@@ -138,7 +138,7 @@ let movies = [
 router.get("/", getAllMoviesCtrl);
 router.get("/:id", auth, getMovieByIdCtrl);
 router.delete("/:id", deleteMovieByIdCtrl);
-router.post("/", auth, AddMoviesCtrl);
+router.post("/", AddMoviesCtrl);
 router.put("/:id", editMoviesByIdctrl);
 
 //  router.post("/", express.json(), function (request, response) {
